@@ -2,6 +2,8 @@
 
 A version of old school snake written in elixir for the terminal.
 
+Inspiration taken from https://github.com/blaknite/snek
+
 ## Running
 
 `mix escript.build`
