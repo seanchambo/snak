@@ -13,7 +13,7 @@ defmodule Snak.Game.Formatter do
   def format(:ended, game),    do: ended(game)
 
   defp start_screen do
-    [ANSI.clear, ANSI.home,
+    [IO.hide_cursor(), ANSI.clear, ANSI.home,
       IO.move_cursor(Grid.height / 2 - 6, Grid.width - 10),
       ANSI.red,
       "####  #   #  ####  #  #",

@@ -13,6 +13,7 @@ defmodule Snak.IO do
 
   def print_mode(mode, game),   do: print(mode, game)
   def move_cursor(row, col),    do: ANSI.format ["\e[#{round(row)};#{round(col)}f"]
+  def hide_cursor,              do: ANSI.format ["\e[?25l"]
 
   def handle_info({pid, {:data, data}}, pid) do
     case interpret_event(data) do
