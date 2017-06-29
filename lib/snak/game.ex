@@ -1,5 +1,5 @@
 defmodule Snak.Game do
-  defstruct [:grid, score: 0, mode: :init, direction: :up]
+  defstruct [:grid, score: 0, mode: :init, direction: :up, tick_direction: nil]
 
   use GenServer
 
@@ -47,16 +47,16 @@ defmodule Snak.Game do
     Grid.move_snake(game)
   end
 
-  defp redraw_game(game = %__MODULE__{mode: mode}) do
+  defp redraw_game(game = %{mode: mode}) do
     IO.print_mode(mode, game)
   end
 
-  defp tick(game = %__MODULE__{score: score, mode: :running}) do
+  defp tick(game = %{score: score, mode: :running}) do
     Process.send_after(self(), :tick, round(@start_tick - score / 10))
-    {:noreply, %{game: game}}
+    {:noreply, %{game: game |> update_tick_direction}}
   end
   defp tick({_, %{game: game}}), do: tick(game)
-  defp tick(game),               do: {:noreply, %{game: game}}
+  defp tick(game),               do: {:noreply, %{game: game |> update_tick_direction}}
 
   defp new_game, do: changeset(%{grid: Grid.new()})
 
@@ -68,11 +68,12 @@ defmodule Snak.Game do
 
   defp increase_score(game), do: changeset(game, %{score: game.score + 10})
   defp set_mode(game, mode), do: changeset(game, %{mode: mode})
+  defp update_tick_direction(game), do: changeset(game, %{tick_direction: game.direction})
 
-  defp can_change_direction?(%__MODULE__{direction: :up}, :down),    do: false
-  defp can_change_direction?(%__MODULE__{direction: :down}, :up),    do: false
-  defp can_change_direction?(%__MODULE__{direction: :left}, :right), do: false
-  defp can_change_direction?(%__MODULE__{direction: :right}, :left), do: false
-  defp can_change_direction?(%__MODULE__{direction: dir}, dir),      do: false
-  defp can_change_direction?(_, _),                                  do: true
+  defp can_change_direction?(%{tick_direction: :up}, :down),    do: false
+  defp can_change_direction?(%{tick_direction: :down}, :up),    do: false
+  defp can_change_direction?(%{tick_direction: :left}, :right), do: false
+  defp can_change_direction?(%{tick_direction: :right}, :left), do: false
+  defp can_change_direction?(%{tick_direction: dir}, dir),      do: false
+  defp can_change_direction?(_, _),                            do: true
 end

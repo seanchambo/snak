@@ -53,7 +53,7 @@ defmodule Snak.Grid do
 
     case :queue.member(position, grid.snake) do
       true -> generate_apple(grid)
-      false -> %__MODULE__{grid | apple: position}
+      false -> %{grid | apple: position}
     end
   end
 end
